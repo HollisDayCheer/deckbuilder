@@ -3,7 +3,6 @@ package com.example.hollis.deckbuilder.DatabaseHelper;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.MergeCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -34,9 +33,7 @@ public class DeckSQliteOpenHelper extends SQLiteOpenHelper {
         public static String STANDARD_PREFIX = "STANDARD_";
         public static String MODERN_PREFIX = "MODERN_";
         public static String LEGACY_PREFIX = "LEGACY";
-
         public static String TABLE_NAME = "TABLE";
-
         public static  String COL_NAME = "NAME";
         public static String COL_API_ID = "api_id";
         public static String COL_DB_ID = "_id";
@@ -128,7 +125,6 @@ public class DeckSQliteOpenHelper extends SQLiteOpenHelper {
 
 
     public void addCard(final Card card, final String format){
-
                 String formatPrefix = "";
         //intentionally not else-ifs in order to concatenate my all formats
         //This creates the allFormats String for my later db insertion
@@ -178,38 +174,40 @@ public class DeckSQliteOpenHelper extends SQLiteOpenHelper {
 
     public Cursor getStandardCards(){
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor =  db.query(CardTable.STANDARD_PREFIX + CardTable.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-        Log.d("SQLITE OPEN HELPER ", "results size: " + cursor.getCount());
-        return cursor;
+        String sqliteString = "SELECT * FROM " + CardTable.STANDARD_PREFIX + CardTable.TABLE_NAME +
+                "  ORDER BY " + CardTable.COL_NAME;
+        return db.rawQuery(sqliteString, null);
     }
+
+
+    public Cursor searchStandardCards(CharSequence input){
+        SQLiteDatabase db = getReadableDatabase();
+        String query = input.toString().trim();
+        String sqliteString = "SELECT * FROM " + CardTable.STANDARD_PREFIX + CardTable.TABLE_NAME +
+                " WHERE " + CardTable.COL_NAME + " LIKE '%" + query + "%' ORDER BY " + CardTable.COL_NAME;
+        return db.rawQuery(sqliteString, null);
+    }
+
 
     public Cursor getModernCards(){
         SQLiteDatabase db = getReadableDatabase();
-        Cursor standardCards = db.query(CardTable.STANDARD_PREFIX + CardTable.TABLE_NAME,
-                null,
-                CardTable.COL_FORMATS + " LIKE ?",
-                new String[]{"%modern%"},
-                null,
-                null,
-                null
-                );
-        Cursor modernCards = db.query(CardTable.MODERN_PREFIX + CardTable.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null);
-        MergeCursor mergeCursor = new MergeCursor(new Cursor[]{standardCards, modernCards});
-        return mergeCursor;
+        String sqliteString = "SELECT * FROM " + CardTable.STANDARD_PREFIX + CardTable.TABLE_NAME +
+                " WHERE " + CardTable.COL_FORMATS + " LIKE '%modern%' UNION ALL " +
+                "SELECT * FROM " + CardTable.MODERN_PREFIX + CardTable.TABLE_NAME +
+                " ORDER BY " + CardTable.COL_NAME;
+        return db.rawQuery(sqliteString, null);
+    }
+
+    public Cursor searchModernCards(CharSequence input){
+        SQLiteDatabase db = getReadableDatabase();
+        String query = input.toString().trim();
+        String sqliteString = "SELECT * FROM " + CardTable.STANDARD_PREFIX + CardTable.TABLE_NAME +
+                " WHERE " + CardTable.COL_FORMATS + " LIKE '%modern%' AND "
+                + CardTable.COL_NAME + " LIKE '%" + query + "%' UNION ALL " +
+                "SELECT * FROM " + CardTable.MODERN_PREFIX + CardTable.TABLE_NAME +
+                " WHERE "
+                + CardTable.COL_NAME + " LIKE '%" + query + "%'  ORDER BY " + CardTable.COL_NAME;
+        return db.rawQuery(sqliteString, null);
     }
     public Cursor getLegacyCards(){
         SQLiteDatabase db = getReadableDatabase();
