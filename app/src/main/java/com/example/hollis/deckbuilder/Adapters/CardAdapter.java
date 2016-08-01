@@ -15,8 +15,6 @@ import com.example.hollis.deckbuilder.Models.Card;
 import com.example.hollis.deckbuilder.Models.Deck;
 import com.example.hollis.deckbuilder.R;
 import com.squareup.picasso.Picasso;
-import com.venmo.cursor.IterableCursor;
-import com.venmo.cursor.IterableCursorAdapter;
 
 /**
  * Created by hollis on 7/29/16.

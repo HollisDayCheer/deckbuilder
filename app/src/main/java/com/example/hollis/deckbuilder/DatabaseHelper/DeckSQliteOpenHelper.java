@@ -213,60 +213,27 @@ public class DeckSQliteOpenHelper extends SQLiteOpenHelper {
     }
     public Cursor getLegacyCards(){
         SQLiteDatabase db = getReadableDatabase();
-        Cursor standardCards = db.query(CardTable.STANDARD_PREFIX + CardTable.TABLE_NAME,
-                null,
-                CardTable.COL_FORMATS + " LIKE ?",
-                new String[]{"%legacy%"},
-                null,
-                null,
-                null
-        );
-        Log.d("DeckSqliteOpen", "Standard cards is: " + standardCards.getCount());
-        Cursor modernCards = db.query(CardTable.MODERN_PREFIX + CardTable.TABLE_NAME,
-                null,
-                CardTable.COL_FORMATS + " LIKE ?",
-                new String[]{"%legacy%"},
-                null,
-                null,
-                null);
-        Cursor legacyCards = db.query(CardTable.LEGACY_PREFIX + CardTable.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null);
-        MergeCursor mergeCursor = new MergeCursor(new Cursor[]{standardCards, modernCards, legacyCards});
-        return mergeCursor;
+        String sqliteString = "SELECT * FROM " + CardTable.STANDARD_PREFIX + CardTable.TABLE_NAME +
+                " WHERE " + CardTable.COL_FORMATS + " LIKE '%legacy%' UNION ALL " +
+                "SELECT * FROM " + CardTable.MODERN_PREFIX + CardTable.TABLE_NAME +
+                " WHERE " + CardTable.COL_FORMATS + " LIKE '%legacy%'  UNION ALL " +
+                "SELECT * FROM " + CardTable.LEGACY_PREFIX + CardTable.TABLE_NAME
+                + " ORDER BY " + CardTable.COL_NAME;
+        return db.rawQuery(sqliteString, null);
     }
 
-    public Cursor searchLegacyCardsByName(CharSequence query){
+    public Cursor searchLegacyCardsByName(CharSequence search){
+        String query = search.toString().trim();
         SQLiteDatabase db = getReadableDatabase();
         Log.d("sqliteopenhelper", "%"+query+"%");
-        Cursor standardCards = db.query(CardTable.STANDARD_PREFIX + CardTable.TABLE_NAME,
-                null,
-                CardTable.COL_FORMATS + " LIKE ? AND " + CardTable.COL_NAME + " LIKE ?",
-                new String[]{"%legacy%", "%" + query + "%"},
-                null,
-                null,
-                null
-        );
-        Cursor modernCards = db.query(CardTable.MODERN_PREFIX + CardTable.TABLE_NAME,
-                null,
-                CardTable.COL_FORMATS + " LIKE ? AND " + CardTable.COL_NAME + " LIKE ?",
-                new String[]{"%legacy%", "%" + query + "%"},
-                null,
-                null,
-                null);
-        Cursor legacyCards = db.query(CardTable.LEGACY_PREFIX + CardTable.TABLE_NAME,
-                null,
-                CardTable.COL_NAME + " LIKE ?",
-                new String[]{"%" + query + "%"},
-                null,
-                null,
-                null);
-        Log.d("Searching database", "num standard cards: " + standardCards.getCount());
-        MergeCursor mergeCursor = new MergeCursor(new Cursor[]{standardCards, modernCards, legacyCards});
-        return mergeCursor;
+        String sqliteString = "SELECT * FROM " + CardTable.STANDARD_PREFIX + CardTable.TABLE_NAME +
+                " WHERE " + CardTable.COL_FORMATS + " LIKE '%legacy%' AND "
+                + CardTable.COL_NAME + " LIKE '%" + query + "%' UNION ALL " +
+                "SELECT * FROM " + CardTable.MODERN_PREFIX + CardTable.TABLE_NAME +
+                " WHERE " + CardTable.COL_FORMATS + " LIKE '%legacy%' AND "
+                + CardTable.COL_NAME + " LIKE '%" + query + "%' UNION ALL " +
+                "SELECT * FROM " + CardTable.LEGACY_PREFIX + CardTable.TABLE_NAME
+                + " WHERE " +CardTable.COL_NAME + " LIKE '%" + query + "%' ORDER BY " + CardTable.COL_NAME;
+        return db.rawQuery(sqliteString, null);
     }
 }
