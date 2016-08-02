@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.drawer_main);
         db = DeckSQliteOpenHelper.getInstance(this);
         button = (Button) findViewById(R.id.activity_main_go_to_downloads_button);
         searchTextView = (EditText) findViewById(R.id.activity_main_auto_complete_text);
