@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="colors">
+        <item>White</item>
+        <item>Blue</item>
+        <item>Black</item>
+        <item>Red</item>
+        <item>Green</item>
+        <item>Colorless</item>
+    </string-array>
+    <string-array name="card_types">
+        <item>Artifact</item>
+        <item>Creature</item>
+        <item>Enchantment</item>
+        <item>Instant</item>
+        <item>Planeswalker</item>
+        <item>Land</item>
+        <item>Sorcery</item>
+        <item>Creature</item>
+    </string-array>
+
+    <string-array name="formats">
+        <item>Standard</item>
+        <item>Modern</item>
+        <item>Legacy</item>
+    </string-array>
+
+    <string-array name="search_options">
+        <item>Name</item>
+        <item>Text</item>
+        <item>SubType</item>
+        <item>Set</item>
+    </string-array>
+
+    <string-array name="group_names">
+        <item>Color</item>
+        <item>Format</item>
+        <item>Type</item>
+        <item>Search Options</item>
+    </string-array>
+
+
+</resources>
