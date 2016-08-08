@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.Observable;
 import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,6 +37,9 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
+
     ListView listView;
     ExpandableListView mNavBarListView;
     Button button;
@@ -73,8 +78,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setNavigationDrawer(){
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_main_layout);
         mNavBarListView = (ExpandableListView) findViewById(R.id.drawer_main_nav_bar_list_view);
         mNavBarListView.setAdapter(new CategoryAdapter(this));
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close);
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
 
     }
 }
