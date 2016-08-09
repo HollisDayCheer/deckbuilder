@@ -3,6 +3,8 @@ package com.example.hollis.deckbuilder;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.Observable;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -26,6 +28,7 @@ import com.example.hollis.deckbuilder.Adapters.CardAdapter;
 import com.example.hollis.deckbuilder.Adapters.CardNameAutofillAdapter;
 import com.example.hollis.deckbuilder.Adapters.CategoryAdapter;
 import com.example.hollis.deckbuilder.DatabaseHelper.DeckSQliteOpenHelper;
+import com.example.hollis.deckbuilder.Fragments.CardListFragment;
 import com.example.hollis.deckbuilder.Models.Card;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
@@ -39,43 +42,16 @@ import rx.schedulers.Schedulers;
 public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
-
-    ListView listView;
     ExpandableListView mNavBarListView;
-    Button button;
-    EditText searchTextView;
-    DeckSQliteOpenHelper db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drawer_main);
         setNavigationDrawer();
-        db = DeckSQliteOpenHelper.getInstance(this);
-        button = (Button) findViewById(R.id.activity_main_go_to_downloads_button);
-        searchTextView = (EditText) findViewById(R.id.activity_main_auto_complete_text);
-        listView = (ListView) findViewById(R.id.activity_main_list_view);
-        final Cursor cursor = db.getLegacyCards();
-        final CardAdapter cursorAdapter = new CardAdapter(this, cursor, 0);
-        listView.setAdapter(cursorAdapter);
-        rx.Observable<CharSequence> editTextStream = RxTextView.textChanges(searchTextView).debounce(300, TimeUnit.MILLISECONDS);
-        editTextStream.observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<CharSequence>() {
-            @Override
-            public void call(CharSequence charSequence) {
-                if(charSequence.toString().equals("")) {
-                    cursorAdapter.swapCursor(db.getLegacyCards());
-                }else{
-                    cursorAdapter.swapCursor(db.searchLegacyCardsByName(charSequence));
-                }
-            }
-        });
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, StarterActivity.class);
-                startActivity(intent);
-            }
-        });
+        setFragment();
     }
+
 
     public void setNavigationDrawer(){
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_main_layout);
@@ -84,6 +60,12 @@ public class MainActivity extends AppCompatActivity {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close);
         mDrawerToggle.setDrawerIndicatorEnabled(true);
         mDrawerLayout.addDrawerListener(mDrawerToggle);
+    }
 
+    public void setFragment(){
+        FragmentManager fragmentManager = (FragmentManager) getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.activity_main_frame, new CardListFragment());
+        fragmentTransaction.commit();
     }
 }
