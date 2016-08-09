@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.example.hollis.deckbuilder.Models.Card;
+import com.example.hollis.deckbuilder.SearchProperties;
 
 /**
  * Created by hollis on 7/20/16.
@@ -28,12 +29,8 @@ public class DeckSQliteOpenHelper extends SQLiteOpenHelper {
         return instance;
     }
 
-
     public static class CardTable{
-        public static String STANDARD_PREFIX = "STANDARD_";
-        public static String MODERN_PREFIX = "MODERN_";
-        public static String LEGACY_PREFIX = "LEGACY";
-        public static String TABLE_NAME = "TABLE";
+        public static String TABLE_NAME = "CARD_TABLE";
         public static  String COL_NAME = "NAME";
         public static String COL_API_ID = "api_id";
         public static String COL_DB_ID = "_id";
@@ -45,31 +42,7 @@ public class DeckSQliteOpenHelper extends SQLiteOpenHelper {
         public static String COL_COLORS = "COLOR";
         public static String COL_FORMATS = "FORMAT";
 
-        public static String CREATE_STANDARD_TABLE = "CREATE TABLE " + STANDARD_PREFIX + TABLE_NAME + "(" +
-                COL_NAME +  " TEXT, " +
-                COL_API_ID +" TEXT, " +
-                COL_DB_ID +" INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COL_CMC +" INTEGER, " +
-                COL_COST +" TEXT, " +
-                COL_TEXT +" TEXT, " +
-                COL_IMAGE_URL +" TEXT, " +
-                COL_TYPES +" TEXT, " +
-                COL_FORMATS + " TEXT, " +
-                COL_COLORS +" TEXT)";
-
-        public static String CREATE_MODERN_TABLE = "CREATE TABLE " + MODERN_PREFIX + TABLE_NAME + "(" +
-                COL_NAME +  " TEXT, " +
-                COL_API_ID +" TEXT, " +
-                COL_DB_ID +" INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COL_CMC +" INTEGER, " +
-                COL_COST +" TEXT, " +
-                COL_TEXT +" TEXT, " +
-                COL_IMAGE_URL +" TEXT, " +
-                COL_TYPES +" TEXT, " +
-                COL_FORMATS + " TEXT, " +
-                COL_COLORS +" TEXT)";
-
-        public static String CREATE_LEGACY_TABLE = "CREATE TABLE " + LEGACY_PREFIX + TABLE_NAME + "(" +
+        public static String CREATE_CARD_TABLE = "CREATE TABLE " + TABLE_NAME + "(" +
                 COL_NAME +  " TEXT, " +
                 COL_API_ID +" TEXT, " +
                 COL_DB_ID +" INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -113,9 +86,7 @@ public class DeckSQliteOpenHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(DeckTable.CREATE_DECK_TABLE);
-        db.execSQL(CardTable.CREATE_STANDARD_TABLE);
-        db.execSQL(CardTable.CREATE_MODERN_TABLE);
-        db.execSQL(CardTable.CREATE_LEGACY_TABLE);
+        db.execSQL(CardTable.CREATE_CARD_TABLE);
     }
 
     @Override
@@ -124,17 +95,8 @@ public class DeckSQliteOpenHelper extends SQLiteOpenHelper {
     }
 
 
-    public void addCard(final Card card, final String format){
-                String formatPrefix = "";
-        //intentionally not else-ifs in order to concatenate my all formats
-        //This creates the allFormats String for my later db insertion
-                if(format.contains("legacy")){
-                    formatPrefix = CardTable.LEGACY_PREFIX;
-                }if(format.contains("modern")){
-                    formatPrefix = CardTable.MODERN_PREFIX;
-                }if(format.contains("standard")){
-                    formatPrefix = CardTable.STANDARD_PREFIX;
-                }
+    public void addCard(final Card card){
+
                 ContentValues values = new ContentValues();
                 values.put(CardTable.COL_NAME, card.getName());
                 values.put(CardTable.COL_API_ID, card.getId());
@@ -154,84 +116,41 @@ public class DeckSQliteOpenHelper extends SQLiteOpenHelper {
                 }else {
                     colorString = "colorless";
                 }
+                String allFormats = "";
+                //intentionally not else ifs, want to go through each individually
+                if(card.getFormats().getStandard() != null){
+                    allFormats += "standard";
+                }
+                if(card.getFormats().getModern() != null){
+                    allFormats += "modern";
+                }
+                if(card.getFormats().getLegacy() != null){
+                    allFormats += "legacy";
+                }
                 values.put(CardTable.COL_TYPES, typeString);
                 values.put(CardTable.COL_COLORS, colorString);
-                values.put(CardTable.COL_FORMATS, format);
+                values.put(CardTable.COL_FORMATS, allFormats);
                 SQLiteDatabase db = getWritableDatabase();
-                db.insert(formatPrefix+CardTable.TABLE_NAME,null, values);
+                db.insert(CardTable.TABLE_NAME,null, values);
                 db.close();
-
-
 
     }
 
     public void resetCards(){
         SQLiteDatabase db = getWritableDatabase();
-        db.delete(CardTable.STANDARD_PREFIX + CardTable.TABLE_NAME, null, null);
-        db.delete(CardTable.MODERN_PREFIX + CardTable.TABLE_NAME, null, null);
-        db.delete(CardTable.LEGACY_PREFIX + CardTable.TABLE_NAME, null, null);
+        db.delete(CardTable.TABLE_NAME, null, null);
     }
 
-    public Cursor getStandardCards(){
-        SQLiteDatabase db = getReadableDatabase();
-        String sqliteString = "SELECT * FROM " + CardTable.STANDARD_PREFIX + CardTable.TABLE_NAME +
-                "  ORDER BY " + CardTable.COL_NAME;
-        return db.rawQuery(sqliteString, null);
-    }
-
-
-    public Cursor searchStandardCards(CharSequence input){
-        SQLiteDatabase db = getReadableDatabase();
-        String query = input.toString().trim();
-        String sqliteString = "SELECT * FROM " + CardTable.STANDARD_PREFIX + CardTable.TABLE_NAME +
-                " WHERE " + CardTable.COL_NAME + " LIKE '%" + query + "%' ORDER BY " + CardTable.COL_NAME;
-        return db.rawQuery(sqliteString, null);
-    }
-
-
-    public Cursor getModernCards(){
-        SQLiteDatabase db = getReadableDatabase();
-        String sqliteString = "SELECT * FROM " + CardTable.STANDARD_PREFIX + CardTable.TABLE_NAME +
-                " WHERE " + CardTable.COL_FORMATS + " LIKE '%modern%' UNION ALL " +
-                "SELECT * FROM " + CardTable.MODERN_PREFIX + CardTable.TABLE_NAME +
-                " ORDER BY " + CardTable.COL_NAME;
-        return db.rawQuery(sqliteString, null);
-    }
-
-    public Cursor searchModernCards(CharSequence input){
-        SQLiteDatabase db = getReadableDatabase();
-        String query = input.toString().trim();
-        String sqliteString = "SELECT * FROM " + CardTable.STANDARD_PREFIX + CardTable.TABLE_NAME +
-                " WHERE " + CardTable.COL_FORMATS + " LIKE '%modern%' AND "
-                + CardTable.COL_NAME + " LIKE '%" + query + "%' UNION ALL " +
-                "SELECT * FROM " + CardTable.MODERN_PREFIX + CardTable.TABLE_NAME +
-                " WHERE "
-                + CardTable.COL_NAME + " LIKE '%" + query + "%'  ORDER BY " + CardTable.COL_NAME;
-        return db.rawQuery(sqliteString, null);
-    }
     public Cursor getLegacyCards(){
         SQLiteDatabase db = getReadableDatabase();
-        String sqliteString = "SELECT * FROM " + CardTable.STANDARD_PREFIX + CardTable.TABLE_NAME +
-                " WHERE " + CardTable.COL_FORMATS + " LIKE '%legacy%' UNION ALL " +
-                "SELECT * FROM " + CardTable.MODERN_PREFIX + CardTable.TABLE_NAME +
-                " WHERE " + CardTable.COL_FORMATS + " LIKE '%legacy%'  UNION ALL " +
-                "SELECT * FROM " + CardTable.LEGACY_PREFIX + CardTable.TABLE_NAME
+        String sqliteString = "SELECT * FROM " + CardTable.TABLE_NAME
                 + " ORDER BY " + CardTable.COL_NAME;
         return db.rawQuery(sqliteString, null);
     }
 
-    public Cursor searchLegacyCardsByName(CharSequence search){
+    public Cursor searchLegacyCardsByName(String search, SearchProperties searchProperties){
         String query = search.toString().trim();
         SQLiteDatabase db = getReadableDatabase();
-        Log.d("sqliteopenhelper", "%"+query+"%");
-        String sqliteString = "SELECT * FROM " + CardTable.STANDARD_PREFIX + CardTable.TABLE_NAME +
-                " WHERE " + CardTable.COL_FORMATS + " LIKE '%legacy%' AND "
-                + CardTable.COL_NAME + " LIKE '%" + query + "%' UNION ALL " +
-                "SELECT * FROM " + CardTable.MODERN_PREFIX + CardTable.TABLE_NAME +
-                " WHERE " + CardTable.COL_FORMATS + " LIKE '%legacy%' AND "
-                + CardTable.COL_NAME + " LIKE '%" + query + "%' UNION ALL " +
-                "SELECT * FROM " + CardTable.LEGACY_PREFIX + CardTable.TABLE_NAME
-                + " WHERE " +CardTable.COL_NAME + " LIKE '%" + query + "%' ORDER BY " + CardTable.COL_NAME;
-        return db.rawQuery(sqliteString, null);
+        return db.rawQuery(searchProperties.getSqliteQuery(query), null);
     }
 }

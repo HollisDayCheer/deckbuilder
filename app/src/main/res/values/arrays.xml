@@ -16,7 +16,6 @@
         <item>Planeswalker</item>
         <item>Land</item>
         <item>Sorcery</item>
-        <item>Creature</item>
     </string-array>
 
     <string-array name="formats">

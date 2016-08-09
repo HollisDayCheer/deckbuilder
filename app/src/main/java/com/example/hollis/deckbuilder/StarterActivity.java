@@ -129,20 +129,7 @@ public class StarterActivity extends AppCompatActivity {
                         public void call(Card card) {
                             curCard++;
                             mProgress.setProgress(curCard);
-                            String allFormats = "";
-                            //intentionally not else ifs, want to go through each individually
-                            if(card.getFormats().getStandard() != null){
-                                allFormats += "standard";
-                            }
-                            if(card.getFormats().getModern() != null){
-                                allFormats += "modern";
-                            }
-                            if(card.getFormats().getLegacy() != null){
-                               allFormats += "legacy";
-                            }
-                            if(!allFormats.isEmpty()){
-                                db.addCard(card, allFormats);
-                            }
+                            db.addCard(card);
                         }
                     }).doOnCompleted(new Action0() {
                         @Override

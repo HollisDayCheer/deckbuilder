@@ -40,7 +40,7 @@ public class CardListFragment extends Fragment{
         button = (Button) v.findViewById(R.id.activity_main_go_to_downloads_button);
         searchTextView = (EditText) v.findViewById(R.id.activity_main_auto_complete_text);
         listView = (ListView) v.findViewById(R.id.activity_main_list_view);
-        final Cursor cursor = db.getLegacyCards();
+        Cursor cursor = db.getLegacyCards();
         final CardAdapter cursorAdapter = new CardAdapter(getContext(), cursor, 0);
         listView.setAdapter(cursorAdapter);
         rx.Observable<CharSequence> editTextStream = RxTextView.textChanges(searchTextView).debounce(300, TimeUnit.MILLISECONDS);
