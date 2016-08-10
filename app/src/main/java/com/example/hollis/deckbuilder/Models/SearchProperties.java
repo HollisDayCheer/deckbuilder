@@ -1,4 +1,4 @@
-package com.example.hollis.deckbuilder;
+package com.example.hollis.deckbuilder.Models;
 
 import com.example.hollis.deckbuilder.DatabaseHelper.DeckSQliteOpenHelper;
 
@@ -132,7 +132,7 @@ public class SearchProperties {
         }
         if(!colorSqliteString.isEmpty()){
             colorSqliteString +=")";
-            sqliteString += "AND (" + colorSqliteString;
+            sqliteString += " AND (" + colorSqliteString;
         }
 
         //Types
@@ -140,24 +140,24 @@ public class SearchProperties {
         conjunction = "";
         if(isArtifact()){
             typeSqliteString += conjunction + DeckSQliteOpenHelper.CardTable.COL_TYPES + " LIKE '%artifact%' ";
-            conjunction = "OR";
+            conjunction = " OR ";
         }
         if(isCreature()){
             typeSqliteString += conjunction +  DeckSQliteOpenHelper.CardTable.COL_TYPES + " LIKE '%creature%' ";
-            conjunction = "OR";
+            conjunction = " OR ";
         }
         if(isEnchantment()){
             typeSqliteString += conjunction +  DeckSQliteOpenHelper.CardTable.COL_TYPES + " LIKE '%enchantment%' ";
-            conjunction = "OR";
+            conjunction = " OR ";
         }if(isLand()){
             typeSqliteString += conjunction +  DeckSQliteOpenHelper.CardTable.COL_TYPES + " LIKE '%land%' ";
-            conjunction = "OR";
+            conjunction = " OR ";
         }if(isPlaneswalker()){
             typeSqliteString+= conjunction +  DeckSQliteOpenHelper.CardTable.COL_TYPES + " LIKE '%planeswalker%' ";
-            conjunction = "OR";
+            conjunction = " OR ";
         }if(isInstant()){
             typeSqliteString += conjunction +  DeckSQliteOpenHelper.CardTable.COL_TYPES + " LIKE '%instant%' ";
-            conjunction = "OR";
+            conjunction = " OR ";
         }if(isSorcery()){
             typeSqliteString += conjunction +  DeckSQliteOpenHelper.CardTable.COL_TYPES + " LIKE '%sorcery%' ";
         }

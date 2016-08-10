@@ -1,8 +1,6 @@
 package com.example.hollis.deckbuilder.Adapters;
 
-import android.content.ClipData;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.DataSetObserver;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,11 +11,9 @@ import android.widget.CompoundButton;
 import android.widget.ExpandableListAdapter;
 import android.widget.TextView;
 
-import com.example.hollis.deckbuilder.MainActivity;
 import com.example.hollis.deckbuilder.R;
-import com.example.hollis.deckbuilder.SearchProperties;
+import com.example.hollis.deckbuilder.Models.SearchProperties;
 
-import java.security.acl.Group;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;

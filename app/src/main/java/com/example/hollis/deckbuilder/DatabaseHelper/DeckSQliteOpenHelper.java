@@ -5,10 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.example.hollis.deckbuilder.Models.Card;
-import com.example.hollis.deckbuilder.SearchProperties;
+import com.example.hollis.deckbuilder.Models.SearchProperties;
 
 /**
  * Created by hollis on 7/20/16.
@@ -141,15 +140,9 @@ public class DeckSQliteOpenHelper extends SQLiteOpenHelper {
         db.delete(CardTable.TABLE_NAME, null, null);
     }
 
-    public Cursor getLegacyCards(){
-        SQLiteDatabase db = getReadableDatabase();
-        String sqliteString = "SELECT * FROM " + CardTable.TABLE_NAME
-                + " ORDER BY " + CardTable.COL_NAME;
 
-       return db.rawQuery(sqliteString, null);
-    }
 
-    public Cursor searchLegacyCardsByName(CharSequence search, SearchProperties searchProperties){
+    public Cursor searchLegacyCards(CharSequence search, SearchProperties searchProperties){
         String query = search.toString().trim();
         SQLiteDatabase db = getReadableDatabase();
         return db.rawQuery(searchProperties.getSqliteQuery(query), null);

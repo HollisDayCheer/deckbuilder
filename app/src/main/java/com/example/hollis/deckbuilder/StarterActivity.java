@@ -30,7 +30,7 @@ import rx.schedulers.Schedulers;
 /**
  * Created by hollis on 7/20/16.
  */
-public class StarterActivity extends AppCompatActivity {
+public class StarterActivity extends AppCompatActivity  {
     public static final String TAG = "StarterActivity";
     private DeckBrewInterface deckBrewInterface;
     private int curCard = 0;

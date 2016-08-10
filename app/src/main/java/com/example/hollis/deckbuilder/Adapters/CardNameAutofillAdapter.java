@@ -52,7 +52,7 @@
 //
 ////    @Override
 ////    public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
-////        return DeckSQliteOpenHelper.getInstance(mContext).searchLegacyCardsByName(constraint);
+////        return DeckSQliteOpenHelper.getInstance(mContext).searchLegacyCards(constraint);
 ////
 ////    }
 //}
