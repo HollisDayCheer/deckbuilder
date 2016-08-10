@@ -15,6 +15,7 @@ import android.widget.ListView;
 import com.example.hollis.deckbuilder.Adapters.CardAdapter;
 import com.example.hollis.deckbuilder.DatabaseHelper.DeckSQliteOpenHelper;
 import com.example.hollis.deckbuilder.R;
+import com.example.hollis.deckbuilder.SearchProperties;
 import com.example.hollis.deckbuilder.StarterActivity;
 import com.jakewharton.rxbinding.widget.RxTextView;
 
@@ -28,13 +29,18 @@ import rx.functions.Action1;
  * Created by hollis on 8/8/16.
  */
 public class CardListFragment extends Fragment{
+    SearchProperties searchProperties = new SearchProperties();
     DeckSQliteOpenHelper db;
     EditText searchTextView;
     ListView listView;
     Button button;
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        searchProperties = new SearchProperties();
+        searchProperties.setName(true);
         View v = inflater.inflate(R.layout.fragment_card_list, container, false);
         db = DeckSQliteOpenHelper.getInstance(getContext());
         button = (Button) v.findViewById(R.id.activity_main_go_to_downloads_button);
@@ -50,7 +56,7 @@ public class CardListFragment extends Fragment{
                 if(charSequence.toString().equals("")) {
                     cursorAdapter.swapCursor(db.getLegacyCards());
                 }else{
-                    cursorAdapter.swapCursor(db.searchLegacyCardsByName(charSequence));
+                    cursorAdapter.swapCursor(db.searchLegacyCardsByName(charSequence, searchProperties));
                 }
             }
         });
@@ -62,5 +68,14 @@ public class CardListFragment extends Fragment{
             }
         });
         return v;
+    }
+
+    public void setSearchProperties(SearchProperties searchProperties){
+        if(searchProperties == null){
+            this.searchProperties = new SearchProperties();
+        }
+        else{
+            this.searchProperties = searchProperties;
+        }
     }
 }

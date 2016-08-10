@@ -10,10 +10,12 @@ import android.widget.ExpandableListView;
 import com.example.hollis.deckbuilder.Adapters.CategoryAdapter;
 import com.example.hollis.deckbuilder.Fragments.CardListFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements CategoryAdapter.OnSearchPropertiesChangedListener {
+    public final static String SHARED_PREFERENCES_KEY = "deckbrew";
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     ExpandableListView mNavBarListView;
+    CardListFragment curFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,11 +36,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setFragment(){
+        curFragment = new CardListFragment();
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.activity_main_frame, new CardListFragment());
+        fragmentTransaction.replace(R.id.activity_main_frame, curFragment);
         fragmentTransaction.commit();
     }
 
-
+    @Override
+    public void onSearchPropertiesChanged(SearchProperties searchProperties) {
+        curFragment.setSearchProperties(searchProperties);
+    }
 }

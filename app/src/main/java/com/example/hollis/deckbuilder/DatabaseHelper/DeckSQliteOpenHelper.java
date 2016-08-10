@@ -145,10 +145,11 @@ public class DeckSQliteOpenHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         String sqliteString = "SELECT * FROM " + CardTable.TABLE_NAME
                 + " ORDER BY " + CardTable.COL_NAME;
-        return db.rawQuery(sqliteString, null);
+
+       return db.rawQuery(sqliteString, null);
     }
 
-    public Cursor searchLegacyCardsByName(String search, SearchProperties searchProperties){
+    public Cursor searchLegacyCardsByName(CharSequence search, SearchProperties searchProperties){
         String query = search.toString().trim();
         SQLiteDatabase db = getReadableDatabase();
         return db.rawQuery(searchProperties.getSqliteQuery(query), null);

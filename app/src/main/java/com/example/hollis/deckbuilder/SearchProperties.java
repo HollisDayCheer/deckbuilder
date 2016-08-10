@@ -15,40 +15,20 @@ public class SearchProperties {
         return red;
     }
 
-    public void setRed(boolean red) {
-        this.red = red;
-    }
-
     public boolean isGreen() {
         return green;
-    }
-
-    public void setGreen(boolean green) {
-        this.green = green;
     }
 
     public boolean isBlue() {
         return blue;
     }
 
-    public void setBlue(boolean blue) {
-        this.blue = blue;
-    }
-
     public boolean isBlack() {
         return black;
     }
 
-    public void setBlack(boolean black) {
-        this.black = black;
-    }
-
     public boolean isWhite() {
         return white;
-    }
-
-    public void setWhite(boolean white) {
-        this.white = white;
     }
 
     public boolean isName() {
@@ -63,16 +43,8 @@ public class SearchProperties {
         return type;
     }
 
-    public void setType(boolean type) {
-        this.type = type;
-    }
-
     public boolean isSubtype() {
         return subtype;
-    }
-
-    public void setSubtype(boolean subtype) {
-        this.subtype = subtype;
     }
 
     public boolean isText() {
@@ -87,88 +59,169 @@ public class SearchProperties {
         return standard;
     }
 
-    public void setStandard(boolean standard) {
-        this.standard = standard;
-    }
-
     public boolean isModern() {
         return modern;
     }
 
-    public void setModern(boolean modern) {
-        this.modern = modern;
-    }
 
     public boolean isLegacy() {
         return legacy;
-    }
-
-    public void setLegacy(boolean legacy) {
-        this.legacy = legacy;
     }
 
     public boolean isArtifact() {
         return artifact;
     }
 
-    public void setArtifact(boolean artifact) {
-        this.artifact = artifact;
-    }
-
     public boolean isCreature() {
         return creature;
-    }
-
-    public void setCreature(boolean creature) {
-        this.creature = creature;
     }
 
     public boolean isEnchantment() {
         return enchantment;
     }
 
-    public void setEnchantment(boolean enchantment) {
-        this.enchantment = enchantment;
-    }
-
     public boolean isInstant() {
         return instant;
-    }
-
-    public void setInstant(boolean instant) {
-        this.instant = instant;
     }
 
     public boolean isPlaneswalker() {
         return planeswalker;
     }
 
-    public void setPlaneswalker(boolean planeswalker) {
-        this.planeswalker = planeswalker;
-    }
-
     public boolean isLand() {
         return land;
-    }
-
-    public void setLand(boolean land) {
-        this.land = land;
     }
 
     public boolean isSorcery() {
         return sorcery;
     }
 
-    public void setSorcery(boolean sorcery) {
-        this.sorcery = sorcery;
-    }
-
     public String getSqliteQuery(String query){
-        String sqliteString = "SELECT * FROM " + DeckSQliteOpenHelper.CardTable.TABLE_NAME + " WHERE ";
+        String sqliteString = "SELECT * FROM " + DeckSQliteOpenHelper.CardTable.TABLE_NAME + " WHERE (";
         //Search Formats
         if(isStandard()){
-            sqliteString = "FORMAT LIKE %";
+            sqliteString += DeckSQliteOpenHelper.CardTable.COL_FORMATS + " LIKE '%standard%'";
         }
-        return null;
+        else if(isModern()){
+            sqliteString += DeckSQliteOpenHelper.CardTable.COL_FORMATS + " LIKE '%modern%'";
+        }else {
+            sqliteString += DeckSQliteOpenHelper.CardTable.COL_FORMATS + " LIKE '%legacy%'";
+        }
+        sqliteString += " ) ";
+        String conjunction = "";
+        String colorSqliteString = "";
+        //Search Colors
+        if(isWhite()){
+            colorSqliteString += conjunction + DeckSQliteOpenHelper.CardTable.COL_COLORS + " LIKE '%white%' ";
+            conjunction = " OR ";
+        }
+        if(isBlue()){
+            colorSqliteString += conjunction  + DeckSQliteOpenHelper.CardTable.COL_COLORS + " LIKE '%blue%' ";
+            conjunction = " OR ";
+        }
+        if(isBlack()){
+            colorSqliteString += conjunction  + DeckSQliteOpenHelper.CardTable.COL_COLORS + " LIKE '%black%' ";
+            conjunction = " OR ";
+        }
+        if(isRed()){
+            colorSqliteString += conjunction + DeckSQliteOpenHelper.CardTable.COL_COLORS + " LIKE '%red%' ";
+            conjunction = " OR ";
+        }
+        if(isGreen()){
+            colorSqliteString +=conjunction + DeckSQliteOpenHelper.CardTable.COL_COLORS + " LIKE '%green%' ";
+        }
+        if(!colorSqliteString.isEmpty()){
+            colorSqliteString +=")";
+            sqliteString += "AND (" + colorSqliteString;
+        }
+
+        //Types
+        String typeSqliteString = "";
+        conjunction = "";
+        if(isArtifact()){
+            typeSqliteString += conjunction + DeckSQliteOpenHelper.CardTable.COL_TYPES + " LIKE '%artifact%' ";
+            conjunction = "OR";
+        }
+        if(isCreature()){
+            typeSqliteString += conjunction +  DeckSQliteOpenHelper.CardTable.COL_TYPES + " LIKE '%creature%' ";
+            conjunction = "OR";
+        }
+        if(isEnchantment()){
+            typeSqliteString += conjunction +  DeckSQliteOpenHelper.CardTable.COL_TYPES + " LIKE '%enchantment%' ";
+            conjunction = "OR";
+        }if(isLand()){
+            typeSqliteString += conjunction +  DeckSQliteOpenHelper.CardTable.COL_TYPES + " LIKE '%land%' ";
+            conjunction = "OR";
+        }if(isPlaneswalker()){
+            typeSqliteString+= conjunction +  DeckSQliteOpenHelper.CardTable.COL_TYPES + " LIKE '%planeswalker%' ";
+            conjunction = "OR";
+        }if(isInstant()){
+            typeSqliteString += conjunction +  DeckSQliteOpenHelper.CardTable.COL_TYPES + " LIKE '%instant%' ";
+            conjunction = "OR";
+        }if(isSorcery()){
+            typeSqliteString += conjunction +  DeckSQliteOpenHelper.CardTable.COL_TYPES + " LIKE '%sorcery%' ";
+        }
+        if(!typeSqliteString.isEmpty()){
+           typeSqliteString += ")";
+            sqliteString += "AND (" + typeSqliteString;
+        }
+
+        //SearchOptions
+        String optionsSqliteString = "";
+        conjunction = "";
+        if(isName()){
+            optionsSqliteString += DeckSQliteOpenHelper.CardTable.COL_NAME + " LIKE '%" + query + "%' ";
+            conjunction = " OR ";
+        }
+        if(isText()){
+            optionsSqliteString += conjunction + DeckSQliteOpenHelper.CardTable.COL_TEXT + " LIKE '%" + query + "%' ";
+            conjunction = " OR ";
+        }
+        if(!optionsSqliteString.isEmpty()){
+            optionsSqliteString += ")";
+            sqliteString += " AND (" + optionsSqliteString;
+        }
+        sqliteString += " ORDER BY " + DeckSQliteOpenHelper.CardTable.COL_NAME;
+        return sqliteString;
+    }
+
+    public void setProperty(String property, boolean value){
+        if(property.equalsIgnoreCase("standard")){
+            this.standard = value;
+        }else if(property.equalsIgnoreCase("modern")){
+            this.modern=value;
+        }else if(property.equalsIgnoreCase("legacy")){
+            this.legacy=value;
+        }else if(property.equalsIgnoreCase("name")){
+            this.name=value;
+        }else if(property.equalsIgnoreCase("type")){
+            this.type=value;
+        }else if(property.equalsIgnoreCase("text")){
+            this.text=value;
+        }else if(property.equalsIgnoreCase("white")){
+            this.white=value;
+        }else if(property.equalsIgnoreCase("blue")){
+            this.blue=value;
+        }else if(property.equalsIgnoreCase("black")){
+            this.black=value;
+        }else if(property.equalsIgnoreCase("red")){
+            this.red=value;
+        }else if(property.equalsIgnoreCase("green")){
+            this.green=value;
+        }else if(property.equalsIgnoreCase("artifact")){
+            this.artifact=value;
+        }else if(property.equalsIgnoreCase("creature")){
+            this.creature=value;
+        }else if(property.equalsIgnoreCase("enchantment")){
+            this.enchantment=value;
+        }else if(property.equalsIgnoreCase("planeswalker")){
+            this.planeswalker=value;
+        }else if(property.equalsIgnoreCase("land")){
+            this.land=value;
+        }else if(property.equalsIgnoreCase("instant")){
+            this.instant=value;
+        }else if(property.equalsIgnoreCase("sorcery")){
+            this.sorcery=value;
+        }
     }
 }
